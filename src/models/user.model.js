@@ -36,8 +36,29 @@ const User = sequelize.define('Usuario', {
   activo: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  monedas: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 100
+  },
+  tiempo_juego_disponible: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 3600
+  },
+  tiempo_juego_maximo: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 3600
+  },
+  tiempo_juego_ultima_actualizacion: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   }
-}, {
+},
+{
   tableName: 'usuarios',
   timestamps: false,
   hooks: {

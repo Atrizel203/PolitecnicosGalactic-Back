@@ -7,32 +7,53 @@ exports.saveScore = async (req, res) => {
   const usuario_id = req.user.id;
 
   try {
-    const highestScore = await Score.findOne({
-      where: { usuario_id },
-      order: [['puntuacion', 'DESC']]
-    });
+    const result = await sequelize.transaction(async (t) => {
+      // Obtener el usuario de forma segura dentro de la transacción
+      const user = await User.findByPk(usuario_id, { transaction: t, lock: t.LOCK.UPDATE });
+      if (!user) {
+        // Esto no debería pasar si el token es válido, pero es una buena práctica
+        return { status: 404, success: false, message: 'Usuario no encontrado.' };
+      }
 
-    if (highestScore && puntuacion <= highestScore.puntuacion) {
-      return res.status(200).json({
+      // 1. Validar y deducir tiempo de juego
+      if (user.tiempo_juego_disponible < tiempo_jugado) {
+        return { status: 400, success: false, message: `No tienes suficiente tiempo de juego. Tienes ${user.tiempo_juego_disponible}s y la partida duró ${tiempo_jugado}s.` };
+      }
+      const nuevoTiempoDisponible = user.tiempo_juego_disponible - tiempo_jugado;
+
+      // 2. Calcular y otorgar monedas (ej: 10% de la puntuación)
+      const monedasGanadas = Math.floor(puntuacion * 0.10);
+      const nuevasMonedas = user.monedas + monedasGanadas;
+      
+      // 3. Actualizar el usuario y guardar la nueva puntuación
+      await user.update({
+          monedas: nuevasMonedas,
+          tiempo_juego_disponible: nuevoTiempoDisponible,
+          tiempo_juego_ultima_actualizacion: new Date() // Actualizamos el timestamp
+      }, { transaction: t });
+        
+      await Score.create({
+          usuario_id,
+          puntuacion,
+          nivel_alcanzado,
+          enemigos_destruidos,
+          tiempo_jugado
+      }, { transaction: t });
+
+      return {
+        status: 201,
         success: true,
-        message: 'La nueva puntuación no es más alta que la mejor registrada. No se guardó.',
-        data: { saved: false }
-      });
-    }
-    
-    const newScore = await Score.create({
-      usuario_id,
-      puntuacion,
-      nivel_alcanzado,
-      enemigos_destruidos,
-      tiempo_jugado
+        message: 'Puntuación guardada y recompensas otorgadas.',
+        data: {
+            puntuacionGuardada: puntuacion,
+            monedasGanadas: monedasGanadas,
+            tiempoRestante: nuevoTiempoDisponible
+        }
+      };
     });
 
-    res.status(201).json({
-      success: true,
-      message: 'Puntuación guardada exitosamente.',
-      data: { saved: true, score: newScore }
-    });
+    res.status(result.status).json(result);
+
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error al guardar la puntuación', error: error.message });
   }
