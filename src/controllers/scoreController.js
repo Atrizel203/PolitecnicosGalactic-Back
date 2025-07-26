@@ -23,7 +23,7 @@ exports.saveScore = async (req, res) => {
   }
 };
 
-// GET /api/scores/leaderboard o /api/scores/leaderboard/:limit
+
 exports.getLeaderboard = async (req, res) => {
   const limit = parseInt(req.params.limit, 10) || 20;
   try {

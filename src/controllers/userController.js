@@ -1,7 +1,6 @@
 const { User, Score } = require('../models');
-const { Sequelize } = require('sequelize'); // <-- ¡ESTA ES LA LÍNEA CLAVE QUE FALTA!
+const { Sequelize } = require('sequelize');
 
-// GET /api/user/profile
 exports.getProfile = async (req, res) => {
   const usuario_id = req.user.id;
 
@@ -44,10 +43,9 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-// --- ¡NUEVA FUNCIÓN AÑADIDA! ---
 // POST /api/user/spend-coins
 exports.spendCoins = async (req, res) => {
-  const { amount } = req.body; // Cantidad de monedas a gastar
+  const { amount } = req.body; 
   const usuario_id = req.user.id;
 
   // 1. Validar la entrada

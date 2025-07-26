@@ -10,14 +10,13 @@ const authRoutes = require('./routes/authRoutes');
 const scoreRoutes = require('./routes/scoreRoutes');
 const userRoutes = require('./routes/userRoutes');
 
-// Inicializar app de Express
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors()); // Habilitar CORS para todas las rutas
-app.use(express.json()); // para parsear application/json
-app.use(express.urlencoded({ extended: true })); // para parsear application/x-www-form-urlencoded
+app.use(cors()); 
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 
 // Rate Limiter
 const limiter = rateLimit({
@@ -29,17 +28,17 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Rutas de la API
+
 app.use('/api/auth', authRoutes);
 app.use('/api/scores', scoreRoutes);
 app.use('/api/user', userRoutes);
 
-// Ruta de bienvenida
+
 app.get('/', (req, res) => {
   res.json({ message: 'Bienvenido a la API de Politecnicos Galactic!' });
 });
 
-// Ruta de prueba de conexión a la base de datos
+
 app.get('/api/health', async (req, res) => {
   try {
     await sequelize.authenticate();
@@ -58,11 +57,11 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Manejador de errores (debe ser el último middleware)
+
 app.use(errorHandler);
 
-// Sincronizar base de datos y arrancar servidor
-sequelize.sync() // Usar { force: true } para resetear la BD en desarrollo
+
+sequelize.sync() 
   .then(() => {
     console.log('Base de datos conectada y sincronizada.');
     app.listen(PORT, () => {

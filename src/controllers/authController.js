@@ -2,14 +2,14 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { Op } = require('sequelize');
 
-// Generar JWT
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
-// POST /api/auth/register
+
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
   try {
@@ -31,7 +31,7 @@ exports.register = async (req, res) => {
   }
 };
 
-// POST /api/auth/login
+
 exports.login = async (req, res) => {
     const { login, password } = req.body;
     try {
@@ -53,16 +53,13 @@ exports.login = async (req, res) => {
     }
 };
 
-// POST /api/auth/logout
+
 exports.logout = (req, res) => {
-  // En JWT, el logout es manejado por el cliente eliminando el token.
-  // Este endpoint es un formalismo.
   res.json({ success: true, message: 'Logout exitoso. Por favor, elimine el token del cliente.' });
 };
 
-// GET /api/auth/verify
+
 exports.verifyToken = (req, res) => {
-  // El middleware 'protect' ya ha verificado el token y adjuntado el usuario.
   res.json({
     success: true,
     message: 'Token válido.',
