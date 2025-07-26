@@ -1,8 +1,7 @@
 const { User, Score, sequelize } = require('../models');
 
-// POST /api/scores
+
 exports.saveScore = async (req, res) => {
-  // ... (código existente de saveScore, no necesita cambios)
   const { puntuacion, tiempo_jugado } = req.body;
   const usuario_id = req.user.id;
 
@@ -26,7 +25,6 @@ exports.saveScore = async (req, res) => {
 
 // GET /api/scores/leaderboard o /api/scores/leaderboard/:limit
 exports.getLeaderboard = async (req, res) => {
-  // ... (código existente de getLeaderboard, no necesita cambios)
   const limit = parseInt(req.params.limit, 10) || 20;
   try {
     const leaderboard = await Score.findAll({
@@ -50,16 +48,15 @@ exports.getLeaderboard = async (req, res) => {
   }
 };
 
-// --- ¡AÑADE ESTA FUNCIÓN FALTANTE! ---
-// GET /api/scores/user/:userId
+
+
 exports.getUserScores = async (req, res) => {
   try {
     const { userId } = req.params;
     const scores = await Score.findAll({
       where: { usuario_id: userId },
       order: [['fecha_partida', 'DESC']],
-      // Opcional: limitar el número de partidas a devolver
-      // limit: 50 
+  
     });
 
     if (!scores) {

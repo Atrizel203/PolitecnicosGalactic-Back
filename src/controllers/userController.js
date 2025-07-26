@@ -71,7 +71,7 @@ exports.spendCoins = async (req, res) => {
       success: true,
       message: 'Compra realizada con éxito.',
       data: {
-        monedasRestantes: user.monedas - amount // El nuevo total
+        monedasRestantes: user.monedas - amount 
       }
     });
 
